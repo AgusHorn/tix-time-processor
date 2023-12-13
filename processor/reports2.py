@@ -396,7 +396,9 @@ class ReportHandler:
             return ip, observations
 
     def __init__(self, installation_dir_path):
+        print("INIT1")
         self.logger = logger.getChild('ReportHandler')
+        self.logger.info("PRUEBA DE LOGGER")
         self.installation_dir_path = installation_dir_path
         self.failed_results_dir_path = join(self.installation_dir_path, self.FAILED_RESULTS_DIR_NAME)
         if not exists(self.failed_results_dir_path):
@@ -422,6 +424,8 @@ class ReportHandler:
     def update_processable_reports(self):
         self.__update_reports_files()
         processable_reports = list()
+        #self.logger.("Processable_reports %s", args=processable_reports)
+        print("Processable_reports %s", processable_reports)
         while (self.calculate_observations_quantity(processable_reports) < self.MINIMUM_OBSERVATIONS_QTY and
                len(self.reports_files) > 0):
             new_report = Report.load(self.reports_files.pop(0))
@@ -441,10 +445,11 @@ class ReportHandler:
                     processable_reports = reports_after_gap
                 else:
                     processable_reports = reports_before_gap
-        if self.calculate_observations_quantity(processable_reports) < self.MINIMUM_OBSERVATIONS_QTY:
-            self.processable_reports = list()
-        else:
-            self.processable_reports = processable_reports
+        # if self.calculate_observations_quantity(processable_reports) < self.MINIMUM_OBSERVATIONS_QTY:
+        #     self.processable_reports = list()
+        # else:
+        #     self.processable_reports = processable_reports
+        self.processable_reports = processable_reports
 
     def get_ip_and_processable_observations(self):
         self.update_processable_reports()

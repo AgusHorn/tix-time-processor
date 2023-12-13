@@ -19,7 +19,7 @@ from os.path import join
 import logging
 
 sys.path.insert(0, '../')
-from processor import reports
+from processor.reports.report_handler import ReportHandler
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +34,7 @@ def create_batch_dir(working_directory, reports_handler):
 
 
 def reshape_results(working_directory):
-    reports_handler = reports.ReportHandler(working_directory)
+    reports_handler = ReportHandler(working_directory)
     reports_handler.update_processable_reports()
     while len(reports_handler.processable_reports) > 0 and \
             reports_handler.MINIMUM_OBSERVATIONS_QTY <= reports_handler.calculate_observations_quantity(reports_handler.processable_reports):

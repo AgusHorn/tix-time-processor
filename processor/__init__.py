@@ -11,8 +11,8 @@ RABBITMQ_HOST = os.environ.get('TIX_RABBITMQ_HOST', 'localhost')
 RABBITMQ_PORT = os.environ.get('TIX_RABBITMQ_PORT', '5672')
 
 
+logging.basicConfig(level=logging.INFO, filename='logs')
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.INFO)
 
 app = Celery('processor.tasks',
              broker='amqp://{rabbitmq_user}:{rabbitmq_pass}@{rabbitmq_host}:{rabbitmq_port}//'.format(

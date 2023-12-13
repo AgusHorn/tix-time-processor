@@ -1,5 +1,4 @@
 FROM python:3.4.7-slim
-MAINTAINER Facundo Martinez <fnmartinez88@gmail.com>
 ENV PROCESSOR_TYPE=STANDALONE
 ENV CELERY_BEAT_SCHEDULE_DIR=/tmp/celerybeat-schedule.d
 ENV CELERY_LOG_LEVEL=INFO

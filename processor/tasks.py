@@ -10,7 +10,7 @@ from os.path import join, isdir, exists
 from processor import app, REPORTS_BASE_PATH, PROCESSING_PERIOD
 from processor import reports
 from processor import api_communication
-from processor import analysis
+from processor import analysis2
 
 tasks_logger = logging.getLogger(__name__)
 
@@ -39,7 +39,7 @@ def process_installation(installation_dir_path, user_id, installation_id):
                                                                                                       ip,
                                                                                                       user_id,
                                                                                                       installation_id))
-                analyzer = analysis.Analyzer(observations)
+                analyzer = analysis2.Analyzer(observations)
                 results = analyzer.get_results()
                 if not api_communication.post_results(ip, results, user_id, installation_id):
                     logger.warn('Could not post results to API. Backing up file for later.')
