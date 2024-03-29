@@ -5,6 +5,7 @@ class Bin:
 
     def __str__(self):
         return str({
+            "DATA": self.data, 
             "LenData": len(self.data),
             "MaxValue": self.max_value,
             "MinValue": self.min_value,

@@ -25,8 +25,8 @@ class Analyzer:
         self.usage_calculator = UsageCalculator(self.meaningful_observations, self.clock_fixer)
         self.hurst_calculator = HurstCalculator(self.meaningful_observations, self.clock_fixer)
         self.quality_calculator = QualityCalculator(self.meaningful_observations,
-                                                    self.hurst_calculator,
-                                                    self.clock_fixer)
+                                                     self.hurst_calculator,
+                                                     self.clock_fixer)
 
     def calculate_meaningful_observations(self):
         sorted_observations = sorted(self.observations, key=attrgetter('day_timestamp'))
