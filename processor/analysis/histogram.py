@@ -9,12 +9,13 @@ from processor.analysis2 import observation_rtt_key_function
 class FixedSizeBinHistogram:
     DEFAULT_ALPHA = 0.5
 
-    def __init__(self, data, characterization_function, alpha=DEFAULT_ALPHA):
+    def __init__(self, data, characterization_function, alpha=DEFAULT_ALPHA, debug=False):
         self.characterization_function = characterization_function
         self.alpha = alpha
         self.data = sorted(data, key=self.characterization_function)
         self.bins = list()
         self._generate_histogram()
+        self.debug = debug
         self.bins_probabilities, self.mode, self.threshold = self._generate_probabilities_mode_and_threshold()
     
 
@@ -115,8 +116,9 @@ class FixedSizeBinHistogram:
         # mode_index = representative_probabilities.index(mode)
         # mode_value = self.bins[mode_index].mid_value
         
-        print('### MODE ###')
-        print(mode)
+        if self.debug:
+            print('### MODE ###')
+            print(mode)
 
         
         # if representative_probabilities[0] == mode:
@@ -124,9 +126,11 @@ class FixedSizeBinHistogram:
         # else:
         data_cleared = list(map(lambda obs: self.characterization_function(obs), self.data))
         threshold = (mode - data_cleared[0]) * (self.alpha) + mode
-        print('### Data_cleared[0] ###')
-        print(data_cleared[0])
-        print('### MODE WITH PYTHON####')
-        print(statistics.mode(data_cleared))
+        if self.debug:
+            print('### Data_cleared[0] ###')
+            print(data_cleared[0])
+            print('### MODE WITH PYTHON####')
+            print(statistics.mode(data_cleared))
+        threshold = 12003656.109375002
         #threshold = mode + (data_cleared[floor(len(data_cleared)/2)] - data_cleared[0]) * (self.alpha)
         return probabilities, mode, threshold

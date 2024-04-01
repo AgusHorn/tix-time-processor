@@ -19,14 +19,13 @@ class Analyzer:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.observations = [observation for observation in observations_set if observation.type_identifier == b'S']
         self.meaningful_observations = self.calculate_meaningful_observations()
-        self.rtt_histogram = FixedSizeBinHistogram(data=self.observations,
-                                                   characterization_function=observation_rtt_key_function)
+        self.rtt_histogram = FixedSizeBinHistogram(data=self.observations,characterization_function=observation_rtt_key_function)
         self.clock_fixer = ClockFixer(self.rtt_histogram.bins[0].data, tau=self.rtt_histogram.mode)
         self.usage_calculator = UsageCalculator(self.meaningful_observations, self.clock_fixer)
-        self.hurst_calculator = HurstCalculator(self.meaningful_observations, self.clock_fixer)
-        self.quality_calculator = QualityCalculator(self.meaningful_observations,
-                                                     self.hurst_calculator,
-                                                     self.clock_fixer)
+        #self.hurst_calculator = HurstCalculator(self.meaningful_observations, self.clock_fixer)
+        #self.quality_calculator = QualityCalculator(self.meaningful_observations,
+                                                    #  self.hurst_calculator,
+                                                    #  self.clock_fixer)
 
     def calculate_meaningful_observations(self):
         sorted_observations = sorted(self.observations, key=attrgetter('day_timestamp'))
@@ -48,13 +47,13 @@ class Analyzer:
             'timestamp': self.meaningful_observations[-1].day_timestamp,
             'upstream': {
                 'usage': self.usage_calculator.upstream_usage,
-                'quality': self.quality_calculator.upstream_quality,
-                'hurst': self.hurst_calculator.upstream_values
+                # 'quality': self.quality_calculator.upstream_quality,
+                # 'hurst': self.hurst_calculator.upstream_values
             },
             'downstream': {
                 'usage': self.usage_calculator.downstream_usage,
-                'quality': self.quality_calculator.downstream_quality,
-                'hurst': self.hurst_calculator.downstream_values
+                # 'quality': self.quality_calculator.downstream_quality,
+                # 'hurst': self.hurst_calculator.downstream_values
             }
         }
         logger.debug(results)

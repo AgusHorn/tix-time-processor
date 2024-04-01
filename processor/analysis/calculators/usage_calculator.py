@@ -1,5 +1,5 @@
 from functools import partial
-
+import numpy as np
 from processor.analysis.histogram import FixedSizeBinHistogram
 from processor.analysis.utils import downstream_time_function, upstream_time_function
 
@@ -12,7 +12,7 @@ class UsageCalculator:
         self.downstream_time_key_function = partial(downstream_time_function,
                                                     phi_function=self.clock_fixer.phi_function)
         self.upstream_histogram = FixedSizeBinHistogram(observations, self.upstream_time_key_function)
-        self.downstream_histogram = FixedSizeBinHistogram(observations, self.downstream_time_key_function)
+        self.downstream_histogram = FixedSizeBinHistogram(observations, self.downstream_time_key_function, 0.5,True)
         self.upstream_usage, self.downstream_usage = self._calculate_usage()
 
     def _calculate_usage(self):
@@ -43,9 +43,9 @@ class UsageCalculator:
         
         downstream_times = list(map(lambda obs: self.downstream_time_key_function(obs), self.observations))
         sorted_times = sorted(downstream_times)
-        # correct_threshold = self.find_threshold_for_area(sorted_times, 0.0000005242074565)
-        # print("##### CORRECT THRESHOLD FOUND")
-        # print(correct_threshold)
+        correct_threshold = self.find_threshold_for_area(sorted_times, self.downstream_histogram.mode)
+        print("##### CORRECT THRESHOLD FOUND")
+        print(correct_threshold)
         # for downstream_time in downstream_times_sorted:
         #     correct_area_from_threshold = self._generate_area_under_curve(self.observations,downstream_time)
         #     print(str(correct_area_from_threshold) + "-" + str(downstream_time) )
@@ -59,6 +59,20 @@ class UsageCalculator:
         area_from_mode = self._generate_area_under_curve(sorted_times, self.downstream_histogram.mode)
         print("#### Area MODE ######")
         print(area_from_mode)
+        print("#### Longitud de mediciones ######")
+        print(len(sorted_times))
+        print("#### Minimo ######")
+        print(sorted_times[0])
+        print("#### Maximo ######")
+        print(sorted_times[-1])
+        print("#### Quartil 25% ######")
+        print(np.percentile(sorted_times, 25))
+        print("#### Quartil 50% ######")
+        print(np.percentile(sorted_times, 50))
+        print("#### Quartil 75% ######")
+        print(np.percentile(sorted_times, 75))
+        
+
         if (area_from_mode != 0): 
             downstream_usage = float(area_from_threshold) / float(area_from_mode) 
         else:
@@ -85,30 +99,32 @@ class UsageCalculator:
             count_same_value = 1
         return accumulator
     
-    # def find_threshold_for_area(self, observations, target_area, tolerance=0.000000001):
-    #     # Establecer límites para la búsqueda binaria
-    #     lower_bound = min(observations)
-    #     upper_bound = max(observations)
-        
-    #     # Realizar búsqueda binaria
-    #     while lower_bound <= upper_bound:
-    #         mid = (lower_bound + upper_bound) / 2
+    def find_threshold_for_area(self, observations, mode):
+        final_area = 0.0003274646992
+        area = 0.0000
+        begin = mode
+        end = observations[-1]
+        threshold = float((begin + end) / 2)
+        while True:
+            print("#AREA# {}".format(area))
+            print("#THRESHOLD# {}".format(threshold))
+            print("#BEGIN# {}".format(begin))
+            print("#END# {}".format(end))
+            area = self._generate_area_under_curve(observations, threshold)
+            area_decimal = round(area, 5)
+            final_area_decimal = round(final_area, 5)
+            print("#AREA_decimal# {}".format(area_decimal))
+            print("#AREAFINAL_decimal# {}".format(final_area_decimal))
+            if area_decimal == final_area_decimal or round(area,2) + 0.01 == round(final_area,2) or round(end,8) == round(begin,8):
+                return threshold, area, begin, end
+            if area < final_area:
+                end = threshold
+                threshold = float((begin + end) / 2)
+            elif area > final_area:
+                begin = threshold
+                threshold = float((begin + end) / 2)
             
-    #         # Calcular el área usando el algoritmo existente con el umbral actual
-    #         area = self._generate_area_under_curve(observations, mid)
-            
-    #         # Comparar el área calculada con el objetivo
-    #         if abs(area - target_area) < tolerance:
-    #             # Si la diferencia está dentro de la tolerancia, devolver el umbral
-    #             return mid
-    #         elif area < target_area:
-    #             # Si el área es menor que el objetivo, ajustar el límite inferior
-    #             lower_bound = mid + tolerance
-    #         else:
-    #             # Si el área es mayor que el objetivo, ajustar el límite superior
-    #             upper_bound = mid - tolerance
+
+
+
         
-    #     print(lower_bound)
-    #     print(upper_bound)
-    #     # Si no se encontró un umbral dentro de la tolerancia, devolver None
-    #     return None
