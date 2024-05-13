@@ -16,7 +16,7 @@ class FixedSizeBinHistogram:
         self.bins = list()
         self._generate_histogram()
         self.debug = debug
-        self.bins_probabilities, self.mode, self.threshold = self._generate_probabilities_mode_and_threshold()
+        self.bins_probabilities, self.mode, self.mode_index = self._generate_probabilities_mode_and_threshold()
     
 
     def _generate_histogram(self):
@@ -46,6 +46,8 @@ class FixedSizeBinHistogram:
     
     def find_mode_sorted_array(self, arr):
         data_cleared = list(map(lambda obs: self.characterization_function(obs), arr))
+        print("&& DATA CLEARED &&")
+        print(data_cleared)
         size = len(data_cleared)
         mode = None
         left = 0
@@ -60,7 +62,7 @@ class FixedSizeBinHistogram:
             else:
                 left = middle
             middle = int(floor((right + left)/2))
-        return mode
+        return mode, middle
 
         
     
@@ -105,7 +107,9 @@ class FixedSizeBinHistogram:
         #print("##### DATA #####")
         #print([observation_rtt_key_function(data) for data in self.data])
         
-        mode = self.find_mode_sorted_array(self.data)
+        mode, mode_index = self.find_mode_sorted_array(self.data)
+        
+        
         # index = self.data.index(mode)
         # bins_qty = int(floor(sqrt(len(self.data))))
         # datapoints_per_bin = len(self.data) // bins_qty
@@ -120,17 +124,17 @@ class FixedSizeBinHistogram:
             print('### MODE ###')
             print(mode)
 
-        
         # if representative_probabilities[0] == mode:
         #     threshold = self.bins[1].mid_value
         # else:
-        data_cleared = list(map(lambda obs: self.characterization_function(obs), self.data))
-        threshold = (mode - data_cleared[0]) * (self.alpha) + mode
-        if self.debug:
-            print('### Data_cleared[0] ###')
-            print(data_cleared[0])
-            print('### MODE WITH PYTHON####')
-            print(statistics.mode(data_cleared))
-        threshold = 12003656.109375002
+        # data_cleared = list(map(lambda obs: self.characterization_function(obs), self.data))
+        # threshold = (mode - data_cleared[0]) * (self.alpha) + mode
+        # # if self.debug:
+        # #     print('### Data_cleared[0] ###')
+        # #     print(data_cleared[0])
+        # #     print('### MODE WITH PYTHON####')
+        # #     print(statistics.mode(data_cleared))
+        # threshold = 9454785.64453125
+        
         #threshold = mode + (data_cleared[floor(len(data_cleared)/2)] - data_cleared[0]) * (self.alpha)
-        return probabilities, mode, threshold
+        return probabilities, mode, mode_index
