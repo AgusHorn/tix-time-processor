@@ -16,7 +16,8 @@ class FixedSizeBinHistogram:
         self.bins = list()
         self._generate_histogram()
         self.debug = debug
-        self.bins_probabilities, self.mode, self.mode_index = self._generate_probabilities_mode_and_threshold()
+        self.bins_probabilities, self.mode, self.threshold = self._generate_probabilities_mode_and_threshold()
+        #self.bins_probabilities, self.mode, self.mode_index, self.threshold = self._generate_probabilities_mode_and_threshold()
     
 
     def _generate_histogram(self):
@@ -38,7 +39,6 @@ class FixedSizeBinHistogram:
         total_datapoints = sum([len(bin_.data) for bin_ in self.bins])
         total_width = self.bins[-1].max_value - self.bins[0].min_value
         #probabilities = [(total_datapoints * total_width) / (len(bin_.data) * bin_.width) for bin_ in self.bins]
-        #probabilities = [(len(bin_.data) / bin_.width) for bin_ in self.bins]
         probabilities = []
         for bin_ in self.bins:
             probabilities.append((len(bin_.data) / (bin_.width)))
@@ -46,8 +46,6 @@ class FixedSizeBinHistogram:
     
     def find_mode_sorted_array(self, arr):
         data_cleared = list(map(lambda obs: self.characterization_function(obs), arr))
-        print("&& DATA CLEARED &&")
-        print(data_cleared)
         size = len(data_cleared)
         mode = None
         left = 0
@@ -64,77 +62,19 @@ class FixedSizeBinHistogram:
             middle = int(floor((right + left)/2))
         return mode, middle
 
-        
-    
-    # def find_mode(self, arr):
-    #     data_cleared = list(map(lambda obs: self.characterization_function(obs), self.data))
-    #     max_count = 0
-    #     mode = None
-    #     index = 0
-    #     final_index = 0
-    #     current_count = 0
-    #     current_number = None
-
-    #     for num in arr:
-    #         if num != current_number:
-    #             current_number = num
-    #             current_count = 1
-    #         else:
-    #             current_count += 1
-
-    #         if current_count > max_count:
-    #             max_count = current_count
-    #             mode = current_number
-    #             final_index = index 
-    #         index += 1
-            
-
-    #     return mode,index
-
-
     def _generate_probabilities_mode_and_threshold(self):
-        
         probabilities = self._generate_bins_probabilities()
         representative_bins = 2 * int(sqrt(len(self.bins)))
         representative_probabilities = probabilities[:representative_bins]
-        # print("## REP PROBS ##")
-        # print(representative_probabilities)
-        # print(max(representative_probabilities))
-        # mode_index = representative_probabilities.index(max(representative_probabilities))
-        # mode_val = self.bins[mode_index].mid_value
-        # print(mode_index)
-        # print(mode_val)
-        #print("##### DATA #####")
-        #print([observation_rtt_key_function(data) for data in self.data])
+        mode = max(representative_probabilities)
+        mode_index = representative_probabilities.index(mode)
+        mode_value = self.bins[mode_index].mid_value
         
-        mode, mode_index = self.find_mode_sorted_array(self.data)
-        
-        
-        # index = self.data.index(mode)
-        # bins_qty = int(floor(sqrt(len(self.data))))
-        # datapoints_per_bin = len(self.data) // bins_qty
-        # bin_index = floor(index / datapoints_per_bin)
-        # mode_value = self.bins[bin_index].mid_value
-        
-        # mode = max(representative_probabilities)
-        # mode_index = representative_probabilities.index(mode)
-        # mode_value = self.bins[mode_index].mid_value
-        
-        if self.debug:
-            print('### MODE ###')
-            print(mode)
+        # mode, mode_index = self.find_mode_sorted_array(self.data)
 
-        # if representative_probabilities[0] == mode:
-        #     threshold = self.bins[1].mid_value
-        # else:
-        # data_cleared = list(map(lambda obs: self.characterization_function(obs), self.data))
-        # threshold = (mode - data_cleared[0]) * (self.alpha) + mode
-        # # if self.debug:
-        # #     print('### Data_cleared[0] ###')
-        # #     print(data_cleared[0])
-        # #     print('### MODE WITH PYTHON####')
-        # #     print(statistics.mode(data_cleared))
-        # threshold = 9454785.64453125
-        
-        #threshold = mode + (data_cleared[floor(len(data_cleared)/2)] - data_cleared[0]) * (self.alpha)
-        return probabilities, mode, mode_index
+        if representative_probabilities[0] == mode:
+            threshold = self.bins[1].mid_value
+        else:
+            threshold = mode + self.alpha * self.bins[0].mid_value
+        return probabilities, mode, threshold
+        #return probabilities, mode, mode_index, threshold

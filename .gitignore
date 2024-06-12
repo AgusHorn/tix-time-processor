@@ -2,6 +2,9 @@
 # User-specific stuff:
 .idea/
 
+## VSCode
+.vscode/
+
 ## File-based project format:
 *.iws
 
@@ -37,4 +40,7 @@ var/
 
 ## Project stuff
 batch-test-reports/
+
+## Excels with Observations
+excels/
 

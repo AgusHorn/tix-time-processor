@@ -22,10 +22,10 @@ class Analyzer:
         self.rtt_histogram = FixedSizeBinHistogram(data=self.observations,characterization_function=observation_rtt_key_function)
         self.clock_fixer = ClockFixer(self.rtt_histogram.bins[0].data, tau=self.rtt_histogram.mode)
         self.usage_calculator = UsageCalculator(self.meaningful_observations, self.clock_fixer)
-        #self.hurst_calculator = HurstCalculator(self.meaningful_observations, self.clock_fixer)
-        #self.quality_calculator = QualityCalculator(self.meaningful_observations,
-                                                    #  self.hurst_calculator,
-                                                    #  self.clock_fixer)
+        self.hurst_calculator = HurstCalculator(self.meaningful_observations, self.clock_fixer)
+        self.quality_calculator = QualityCalculator(self.meaningful_observations,
+                                                     self.hurst_calculator,
+                                                     self.clock_fixer)
 
     def calculate_meaningful_observations(self):
         sorted_observations = sorted(self.observations, key=attrgetter('day_timestamp'))
@@ -47,13 +47,22 @@ class Analyzer:
             'timestamp': self.meaningful_observations[-1].day_timestamp,
             'upstream': {
                 'usage': self.usage_calculator.upstream_usage,
-                # 'quality': self.quality_calculator.upstream_quality,
-                # 'hurst': self.hurst_calculator.upstream_values
+                'quality': self.quality_calculator.upstream_quality,
+                'hurst': self.hurst_calculator.upstream_values
             },
             'downstream': {
                 'usage': self.usage_calculator.downstream_usage,
-                # 'quality': self.quality_calculator.downstream_quality,
-                # 'hurst': self.hurst_calculator.downstream_values
+                'quality': self.quality_calculator.downstream_quality,
+                'hurst': self.hurst_calculator.downstream_values
+            },
+            'dataFromReport': {
+                'LongMediciones': self.usage_calculator.long_mediciones if hasattr(self.usage_calculator, 'long_mediciones') else 0,
+                'Minimo': self.usage_calculator.min if hasattr(self.usage_calculator, 'min') else 0,
+                'Maximo': self.usage_calculator.max if hasattr(self.usage_calculator, 'max') else 0,
+                'Q25': self.usage_calculator.first_q if hasattr(self.usage_calculator, 'first_q') else 0,
+                'Q50': self.usage_calculator.second_q if hasattr(self.usage_calculator, 'second_q') else 0,
+                'Q75': self.usage_calculator.third_q if hasattr(self.usage_calculator, 'third_q') else 0,
+                'ModeIndex': self.usage_calculator.mode_index if hasattr(self.usage_calculator, 'mode_index') else 0
             }
         }
         logger.debug(results)

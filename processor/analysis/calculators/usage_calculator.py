@@ -16,8 +16,6 @@ class UsageCalculator:
         self.upstream_usage, self.downstream_usage = self._calculate_usage()
 
     def _calculate_usage(self):
-        #print("#### DOWNSTREAM MODE ######")
-        #print(self.downstream_histogram.mode)
         upstream_over_threshold = 0
         downstream_over_threshold = 0
         upstream_over_mode = 0
@@ -25,78 +23,51 @@ class UsageCalculator:
         for observation in self.observations:
             upstream_time = self.upstream_time_key_function(observation)
             downstream_time = self.downstream_time_key_function(observation)
-            # if upstream_time > self.upstream_histogram.threshold:
-            #     upstream_over_threshold += 1
-            # if downstream_time > self.downstream_histogram.threshold:
-            #     downstream_over_threshold += 1
+            if upstream_time > self.upstream_histogram.threshold:
+                upstream_over_threshold += 1
+            if downstream_time > self.downstream_histogram.threshold:
+                downstream_over_threshold += 1
             if upstream_time > self.upstream_histogram.mode:
                 upstream_over_mode += 1
             if downstream_time > self.downstream_histogram.mode:
                 downstream_over_mode += 1
         upstream_usage = upstream_over_threshold / upstream_over_mode
 
-        # downstream_usage = downstream_over_threshold / downstream_over_mode
+        downstream_usage = downstream_over_threshold / downstream_over_mode
 
-        print("@@@ DOWNSTREAM MODE @@@")
-        print(self.downstream_histogram.mode)
-        print(self.downstream_histogram.mode_index)
-
-        downstream_times = list(map(lambda obs: self.downstream_time_key_function(obs), self.observations))
-        sorted_times = sorted(downstream_times)
-        print("Sorted times")
-        print(sorted_times)
-        # for downstream_time in downstream_times_sorted:
-        #     correct_area_from_threshold = self._generate_area_under_curve(self.observations,downstream_time)
-        #     print(str(correct_area_from_threshold) + "-" + str(downstream_time) )
-        #     if (correct_area_from_threshold == 0.0000005242074565):
-        #         print("##### CORRECT THRESHOLD FOUND")
-        #         print(correct_area_from_threshold)
+        # downstream_times = list(map(lambda obs: self.downstream_time_key_function(obs), self.observations))
+        # sorted_times = sorted(downstream_times)
 
         # area_from_threshold = self._generate_area_under_curve(sorted_times,self.downstream_histogram.threshold)
-        # print("#### Area from Threshold ######")
-        # print(area_from_threshold)       
         # area_from_mode = self._generate_area_under_curve(sorted_times, self.downstream_histogram.mode)
-        # print("#### Area MODE ######")
-        # print(area_from_mode)
 
-        first_area_value_index = self.downstream_histogram.mode_index - 30
-        first_area_value = sorted_times[first_area_value_index]
-        last_area_value_index = self.downstream_histogram.mode_index + 60
-        last_area_value = sorted_times[last_area_value_index]
-        print("First area value {} y el first area value index {}".format(first_area_value, first_area_value_index))
-        print("Last area value {} y el last area value index {}".format(last_area_value, last_area_value_index))
+        # first_area_value_index = self.downstream_histogram.mode_index - 30
+        # first_area_value = sorted_times[first_area_value_index]
+        # last_area_value_index = self.downstream_histogram.mode_index + 60
+        # last_area_value = sorted_times[last_area_value_index]
+        # print("First area value {} y el first area value index {}".format(first_area_value, first_area_value_index))
+        # print("Last area value {} y el last area value index {}".format(last_area_value, last_area_value_index))
 
-        mode_to_end_area = self._generate_area_under_curve(sorted_times, self.downstream_histogram.mode, last_area_value_index)
-        print("#### MODE TO END AREA ######")
-        print(mode_to_end_area)
+        # mode_to_end_area = self._generate_area_under_curve(sorted_times, self.downstream_histogram.mode, last_area_value_index)
+        # print("#### MODE TO END AREA ######")
+        # print(mode_to_end_area)
 
-        full_area = self._generate_area_under_curve(sorted_times, first_area_value, last_area_value_index)
-        print("#### FULL AREA ######")
-        print(full_area)
+        # full_area = self._generate_area_under_curve(sorted_times, first_area_value, last_area_value_index)
+        # print("#### FULL AREA ######")
+        # print(full_area)
 
-        
+        # self.long_mediciones = len(sorted_times)
+        # self.min = sorted_times[0]
+        # self.max = sorted_times[-1]
+        # self.first_q = np.percentile(sorted_times, 25)
+        # self.second_q = np.percentile(sorted_times, 50)
+        # self.third_q = np.percentile(sorted_times, 75)
+        # self.mode_index = self.downstream_histogram.mode_index      
 
-        # print("#### Longitud de mediciones ######")
-        # print(len(sorted_times))
-        # print("#### Minimo ######")
-        # print(sorted_times[0])
-        # print("#### Maximo ######")
-        # print(sorted_times[-1])
-        # print("#### Quartil 25% ######")
-        # print(np.percentile(sorted_times, 25))
-        # print("#### Quartil 50% ######")
-        # print(np.percentile(sorted_times, 50))
-        # print("#### Quartil 75% ######")
-        # print(np.percentile(sorted_times, 75))
-        # correct_threshold = self.find_threshold_for_area(sorted_times, self.downstream_histogram.mode)
-        # print("##### CORRECT THRESHOLD FOUND")
-        # print(correct_threshold)
-        
-
-        if (full_area != 0): 
-            downstream_usage = float(mode_to_end_area) / float(full_area) 
-        else:
-            downstream_usage = 0
+        # if (area_from_mode != 0): 
+        #     downstream_usage = float(area_from_threshold) / float(area_from_mode) 
+        # else:
+        #     downstream_usage = 0
         return upstream_usage, downstream_usage
     
     def _generate_area_under_curve(self, observations, threshold=0, stop_index=0):

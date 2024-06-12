@@ -145,9 +145,12 @@ class ReportHandler:
         return ip, observations
 
     def delete_unneeded_reports(self):
-        reports_to_delete_qty = len(self.processable_reports) // 2
-        reports_to_delete = self.processable_reports[:reports_to_delete_qty]
-        self.delete_reports_files(reports_to_delete)
+        report = self.processable_reports[0]
+        if exists(report.file_path):
+                unlink(report.file_path)
+        # reports_to_delete_qty = len(self.processable_reports) // 2
+        # reports_to_delete = self.processable_reports[:reports_to_delete_qty]
+        # self.delete_reports_files(reports_to_delete)
 
     def failed_results_dir_is_empty(self):
         return not exists(self.failed_results_dir_path) or len(listdir(self.failed_results_dir_path)) == 0
