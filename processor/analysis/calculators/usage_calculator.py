@@ -6,6 +6,7 @@ from processor.analysis.utils import downstream_time_function, upstream_time_fun
 class UsageCalculator:
     def __init__(self, observations, clock_fixer):
         self.observations = observations
+        # print("Len observations: {}".format(len(observations)))
         self.clock_fixer = clock_fixer
         self.upstream_time_key_function = partial(upstream_time_function,
                                                   phi_function=self.clock_fixer.phi_function)

@@ -18,7 +18,8 @@ class Analyzer:
     def __init__(self, observations_set):
         self.logger = logging.getLogger(self.__class__.__name__)
         self.observations = [observation for observation in observations_set if observation.type_identifier == b'S']
-        self.meaningful_observations = self.calculate_meaningful_observations()
+        #self.meaningful_observations = self.calculate_meaningful_observations()
+        self.meaningful_observations = self.observations
         self.rtt_histogram = FixedSizeBinHistogram(data=self.observations,characterization_function=observation_rtt_key_function)
         self.clock_fixer = ClockFixer(self.rtt_histogram.bins[0].data, tau=self.rtt_histogram.mode)
         self.usage_calculator = UsageCalculator(self.meaningful_observations, self.clock_fixer)
