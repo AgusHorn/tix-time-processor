@@ -66,11 +66,11 @@ class FixedSizeBinHistogram:
         probabilities = self._generate_bins_probabilities()
         representative_bins = 2 * int(sqrt(len(self.bins)))
         representative_probabilities = probabilities[:representative_bins]
-        mode = max(representative_probabilities)
-        mode_index = representative_probabilities.index(mode)
-        mode_value = self.bins[mode_index].mid_value
+        # mode = max(representative_probabilities)
+        # mode_index = representative_probabilities.index(mode)
+        # mode_value = self.bins[mode_index].mid_value
         
-        # mode, mode_index = self.find_mode_sorted_array(self.data)
+        mode, mode_index = self.find_mode_sorted_array(self.data)
 
         if representative_probabilities[0] == mode:
             threshold = self.bins[1].mid_value

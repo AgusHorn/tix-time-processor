@@ -23,9 +23,9 @@ class Analyzer:
         self.clock_fixer = ClockFixer(self.rtt_histogram.bins[0].data, tau=self.rtt_histogram.mode)
         self.usage_calculator = UsageCalculator(self.meaningful_observations, self.clock_fixer)
         self.hurst_calculator = HurstCalculator(self.meaningful_observations, self.clock_fixer)
-        self.quality_calculator = QualityCalculator(self.meaningful_observations,
-                                                     self.hurst_calculator,
-                                                     self.clock_fixer)
+        # self.quality_calculator = QualityCalculator(self.meaningful_observations,
+        #                                              self.hurst_calculator,
+        #                                              self.clock_fixer)
 
     def calculate_meaningful_observations(self):
         sorted_observations = sorted(self.observations, key=attrgetter('day_timestamp'))
@@ -47,12 +47,12 @@ class Analyzer:
             'timestamp': self.meaningful_observations[-1].day_timestamp,
             'upstream': {
                 'usage': self.usage_calculator.upstream_usage,
-                'quality': self.quality_calculator.upstream_quality,
+                'quality': 0,
                 'hurst': self.hurst_calculator.upstream_values
             },
             'downstream': {
                 'usage': self.usage_calculator.downstream_usage,
-                'quality': self.quality_calculator.downstream_quality,
+                'quality': 0,
                 'hurst': self.hurst_calculator.downstream_values
             },
             'dataFromReport': {
