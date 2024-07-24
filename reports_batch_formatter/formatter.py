@@ -33,9 +33,9 @@ def copy_long_packets_to_tmp_directory(source_dir):
             shutil.copy(file_full_path, temp_dir)
     return temp_dir
 
-def generate_batches(working_directory):
+def generate_batches(working_directory, source_dir):
     logger.info("Generating batches")
-    reports_handler = ReportHandler(working_directory)
+    reports_handler = ReportHandler(working_directory, source_dir)
     reports_handler.process_reports_and_generate_batches()
     os.rmdir(reports_handler.failed_results_dir_path)
 
@@ -73,7 +73,7 @@ if __name__ == "__main__":
 
     temp_dir = copy_long_packets_to_tmp_directory(abs_source_dir)
     
-    generate_batches(temp_dir)
+    generate_batches(temp_dir, abs_source_dir)
 
     create_tar_file(abs_output_dir, output_filename, temp_dir)
     

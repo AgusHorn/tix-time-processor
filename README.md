@@ -171,16 +171,21 @@ cd <output_directory>
 mkdir batch-test-report
 tar -xzf batch-test-report.tar.gz -C batch-test-report/
 ```
+
+After running de formatter, you need to extract only the batches files.
+These are named like: ```1721187934.json``` and NOT like ```1721187994501-13594483321220-tix-log.json```
+
 ### Launching the Notebook
 In order to run the notebook for visualizing the results, from the `tix-time-processor` directory run:
 ```sh
 jupyter notebook
 ```
-This should open up a Jupyter Notebook in your browser. From there, open the `general_analysis_notebook.ipynb` notebook.
-In the first cell of the notebook, you can specify the paths to the reports batches directory (generated in the previous step), the YAML configuration file used for the test, and the network usage log file. For example:
+This should open up a Jupyter Notebook in your browser. From there, open the `new_general_analysis_notebook.ipynb` notebook.
+In the first cell of the notebook, you can specify the paths to the reports batches directory (generated in the previous step), the YAML configuration file used for the test, and the network usage log file. If you run the TIX client in one host and the torrent client in another host, then you will need the network usage file for both hosts. For example:
 ```sh
 BATCHES_DIR = '/path/to/batch-test-report'
 TEST_CONFIG_FILE = '/path/to/description.yml'
 NET_USAGE_FILE='/path/to/network_usage.log'
+NET_USAGE_TIX_FILE='/path/to/network_usage_tix_file.log'
 ```
 Afterwards, you can simply execute all the cells in the notebook, and should be able to visualize the results.

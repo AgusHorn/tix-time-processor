@@ -19,3 +19,6 @@ python formatter.py \
     --source_directory=path/to/logs \
     --output_directory=path/to/output \
 ```
+
+After running de formatter, you need to extract only the batches files.
+These are named like: ```1721187934.json``` and NOT like ```1721187994501-13594483321220-tix-log.json```

@@ -9,6 +9,8 @@ from processor.reports.report_JSON import ReportJSON
 
 logger = logging.getLogger(__name__)
 
+
+# Deprecated. Use new_report_handler
 class ReportHandler:
     MINIMUM_OBSERVATIONS_QTY = 1024 + 60  # We need 1024 observation points plus a minute for analysis
     MAXIMUM_OBSERVATIONS_QTY = 1200
@@ -148,9 +150,9 @@ class ReportHandler:
         report = self.processable_reports[0]
         if exists(report.file_path):
                 unlink(report.file_path)
-        # reports_to_delete_qty = len(self.processable_reports) // 2
-        # reports_to_delete = self.processable_reports[:reports_to_delete_qty]
-        # self.delete_reports_files(reports_to_delete)
+        reports_to_delete_qty = len(self.processable_reports) // 2
+        reports_to_delete = self.processable_reports[:reports_to_delete_qty]
+        self.delete_reports_files(reports_to_delete)
 
     def failed_results_dir_is_empty(self):
         return not exists(self.failed_results_dir_path) or len(listdir(self.failed_results_dir_path)) == 0

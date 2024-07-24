@@ -1,7 +1,7 @@
 ipykernel==6.15.0
 jupyter==1.0.0
 matplotlib==3.5.0
-pandas==1.2.5
+pandas==1.5.0
 pyyaml==6.0
 celery==5.2.0
 PyWavelets==1.2.0

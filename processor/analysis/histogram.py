@@ -3,21 +3,19 @@ from math import floor
 import statistics
 
 from processor.analysis.bin import Bin
-from processor.analysis2 import observation_rtt_key_function
 
 
 class FixedSizeBinHistogram:
     DEFAULT_ALPHA = 0.5
 
-    def __init__(self, data, characterization_function, alpha=DEFAULT_ALPHA, debug=False):
+    def __init__(self, data, characterization_function, alpha=DEFAULT_ALPHA):
         self.characterization_function = characterization_function
         self.alpha = alpha
         self.data = sorted(data, key=self.characterization_function)
         self.bins = list()
         self._generate_histogram()
-        self.debug = debug
         self.bins_probabilities, self.mode, self.threshold = self._generate_probabilities_mode_and_threshold()
-        #self.bins_probabilities, self.mode, self.mode_index, self.threshold = self._generate_probabilities_mode_and_threshold()
+        #self.bins_probabilities, self.mode, self.threshold = self._generate_probabilities_mode_and_threshold()
     
 
     def _generate_histogram(self):
@@ -36,15 +34,19 @@ class FixedSizeBinHistogram:
             self.bins[-1].update(self.data[threshold:])
 
     def _generate_bins_probabilities(self):
-        total_datapoints = sum([len(bin_.data) for bin_ in self.bins])
-        total_width = self.bins[-1].max_value - self.bins[0].min_value
-        #probabilities = [(total_datapoints * total_width) / (len(bin_.data) * bin_.width) for bin_ in self.bins]
         probabilities = []
         for bin_ in self.bins:
             probabilities.append((len(bin_.data) / (bin_.width)))
         return list(probabilities)
     
     def find_mode_sorted_array(self, arr):
+        """
+        Finds the mode in a sorted array
+
+        Returns
+        -------
+        the mode and the mode's index in the array
+        """
         data_cleared = list(map(lambda obs: self.characterization_function(obs), arr))
         size = len(data_cleared)
         mode = None
@@ -66,15 +68,18 @@ class FixedSizeBinHistogram:
         probabilities = self._generate_bins_probabilities()
         representative_bins = 2 * int(sqrt(len(self.bins)))
         representative_probabilities = probabilities[:representative_bins]
-        # mode = max(representative_probabilities)
-        # mode_index = representative_probabilities.index(mode)
-        # mode_value = self.bins[mode_index].mid_value
+        mode = max(representative_probabilities)
+        mode_index = representative_probabilities.index(mode)
+        mode_value = self.bins[mode_index].mid_value
         
-        mode, mode_index = self.find_mode_sorted_array(self.data)
+        # This mode and mode index replace the old algorithm
+        # mode, mode_index = self.find_mode_sorted_array(self.data)
 
         if representative_probabilities[0] == mode:
             threshold = self.bins[1].mid_value
         else:
-            threshold = mode + self.alpha * self.bins[0].mid_value
-        return probabilities, mode, threshold
-        #return probabilities, mode, mode_index, threshold
+            threshold = mode_value + self.alpha * self.bins[0].mid_value
+            # threshold = mode + self.alpha * self.bins[0].mid_value
+        return probabilities, mode_value, threshold
+        # return probabilities, mode, threshold
+        

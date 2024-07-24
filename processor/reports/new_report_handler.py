@@ -26,7 +26,7 @@ class ReportHandler:
             if exists(report.file_path):
                 os.unlink(report.file_path)
 
-    def __init__(self, installation_dir_path):
+    def __init__(self, installation_dir_path, source_directory):
         self.logger = logger.getChild('ReportHandler')
         self.installation_dir_path = installation_dir_path
         self.logger.info('Installation directory {}'.format(self.installation_dir_path))
@@ -36,7 +36,7 @@ class ReportHandler:
             os.mkdir(self.failed_results_dir_path)
         self.reports = list()
         self.reports_files_names = self.__get_report_files_names()
-        self.client_netstat_times = self.__get_client_net_stat_times()
+        self.client_netstat_times = self.__get_client_net_stat_times(source_directory)
         self.batches = list()
         self.current_netstat_index = 0
 
@@ -52,7 +52,7 @@ class ReportHandler:
                 for report_file_name in sorted(os.listdir(self.installation_dir_path))
                 if report_file_name.endswith('.json')]
 
-    def __get_client_net_stat_times(self):
+    def __get_client_net_stat_times(self, source_directory):
         """
         Gets the times measured by net_stat in the test.
         This net_stat file shows the actual network usage in the network.
@@ -62,8 +62,8 @@ class ReportHandler:
         a list of times as strings
         """
         times = []
-        absolute_path = os.path.dirname(os.path.abspath(__file__))
-        filename = absolute_path + '/network_usage_torrents.log'
+        absolute_path = os.path.dirname(os.path.abspath(source_directory))
+        filename = absolute_path + '/' + self.CLIENT_NETSTAT_PATH
         with open(filename) as netstat_file:
             # Skip header
             next(netstat_file)
@@ -79,7 +79,8 @@ class ReportHandler:
         for i in range(0, len(report.observations)):
             observation = report.observations[i]
             current_net_stat_time = int(self.client_netstat_times[self.current_netstat_index].split('.')[0])
-            if observation.day_timestamp == current_net_stat_time:
+            next_net_stat_time = int(self.client_netstat_times[self.current_netstat_index + 1].split('.')[0])
+            if current_net_stat_time <= observation.day_timestamp < next_net_stat_time:
                 self.save_batch(report, i)
 
     def save_batch(self, report, index = 0):
@@ -126,9 +127,6 @@ class ReportHandler:
         report = self.processable_reports[0]
         if exists(report.file_path):
                 os.unlink(report.file_path)
-        # reports_to_delete_qty = len(self.processable_reports) // 2
-        # reports_to_delete = self.processable_reports[:reports_to_delete_qty]
-        # self.delete_reports_files(reports_to_delete)
 
     def failed_results_dir_is_empty(self):
         return not exists(self.failed_results_dir_path) or len(os.listdir(self.failed_results_dir_path)) == 0
